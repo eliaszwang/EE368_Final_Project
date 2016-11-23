@@ -1,5 +1,5 @@
 function [ks, ls] = nearest_n(R, X, Q_size, S)
-
+%Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 0;
 [h,w,c] = size(S);
 RX = X(logical(R));
