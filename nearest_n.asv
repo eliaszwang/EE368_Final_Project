@@ -4,8 +4,7 @@ opt = 0;
 [h,w,c] = size(S);
 RX = X(logical(R));
 min_l2 = Inf;
-
-imshow(reshape(RX,21,21,3));
+imshow(reshape(RX,h
 if opt == 0
     for k=1:(h-Q_size+1)
         for j=1:(w-Q_size+1)
