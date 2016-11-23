@@ -5,7 +5,7 @@ opt = 0;
 RX = X(logical(R));
 min_l2 = Inf;
 
-imshow(reshape(RX,21,21,3));
+
 if opt == 0
     for k=1:(h-Q_size+1)
         for j=1:(w-Q_size+1)
@@ -19,14 +19,37 @@ if opt == 0
         end
     end
 else
+    % compute patch matrix
     P = zeros(Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
     for k=1:(h-Q_size+1)
         for j=1:(w-Q_size+1)
-            patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
+            patch = S(k:k+Q_size-1,j:j+Q_size-1);
             P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
         end
     end
+    P = P - repmat(mean(P,2),[1 size(P,2)]);
+    [U, S, V] = svd(P);
     
+    % find eig vals
+    eig_idx = 1;
+    energy = 0; energy_tot = sum(sum(S.*S));
+    for i=1:min(size(S,1),size(S,2))
+        energy = energy + S(i,i)*S(i,i);
+        if energy > 0.95*energy_tot
+            eig_idx = i;
+            break;
+        end
+    end
+    
+    % reduce dimensionality
+    Vp = V(1:eig_idx);
+    Pp = Vr' * P;
+    RXp = Vr' * RX;
+    diff = repmat(Rxp, [1 size(Pp,2)]) - Pp;
+    sqr = sum(diff .* diff, 2);
+    [~, idx] = min(sqr);
+    ks = mod(idx, (w-Q_size+1)) + 1;
+    ls = floor(idx, (w-Q_size+1)) + 1;
 end
 
 
