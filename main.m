@@ -33,6 +33,9 @@ for L=1
             for i=1:gap:h
                 i
                 for j=1:gap:w
+                    R = zeros(size(house));
+                    R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
+                    R = R(:);
                     [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
                     z = [z zij];
                 end
