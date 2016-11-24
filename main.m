@@ -40,3 +40,21 @@ X=X(:);
 
 % 5. Denoise
 X = RF(X, sigma_s, sigma_r);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
