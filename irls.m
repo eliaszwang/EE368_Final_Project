@@ -1,7 +1,7 @@
 function [Xtilde]=irls(R,X,z)
     % performs IRLS to estimate Xtilde
     % R is matrix of image patches with dimensions 3N_c by N_ij
-    % X is initial estimate 
+    % X is initial estimate, dimensions 3N_c by 1
     % z is matrix of style patches with dimensions n by N_ij
     [n,Nij]=size(z);
     I= 10; %max number of IRLS iterations
@@ -18,5 +18,5 @@ function [Xtilde]=irls(R,X,z)
         end
         Xk=A\B;
     end
-    Xhat=Xk;
+    Xtilde=Xk;
 end
