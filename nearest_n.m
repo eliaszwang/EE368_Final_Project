@@ -55,7 +55,7 @@ end
 
 
 z = S(ks:ks+Q_size-1,ls:ls+Q_size-1);
-
+z = z(:);
 
 
 
