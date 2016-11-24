@@ -1,7 +1,8 @@
-function [ks, ls] = nearest_n(R, X, Q_size, S)
-
+function [ks, ls, ] = nearest_n(R, X, Q_size, S, h, w)
+%Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 0;
-[h,w,c] = size(S);
+% [h,w,c] = size(S);
+% S = reshape(S, [h w]);
 RX = X(logical(R));
 min_l2 = Inf;
 
@@ -28,7 +29,7 @@ else
         end
     end
     P = P - repmat(mean(P,2),[1 size(P,2)]);
-    [U, S, V] = svd(P);
+    [~, S, V] = svd(P);
     
     % find eig vals
     eig_idx = 1;
@@ -44,7 +45,12 @@ else
     % reduce dimensionality
     Vp = V(1:eig_idx);
     Pp = Vr' * P;
-    RXp = Vr' *RX
+    RXp = Vr' * RX;
+    diff = repmat(Rxp, [1 size(Pp,2)]) - Pp;
+    sqr = sum(diff .* diff, 2);
+    [~, idx] = min(sqr);
+    ks = mod(idx, (w-Q_size+1)) + 1;
+    ls = floor(idx, (w-Q_size+1)) + 1;
 end
 
 
