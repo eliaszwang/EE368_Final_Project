@@ -16,7 +16,6 @@ R = R(:);
 X = house(:);
 S = night(:);
 Q_size = 21;
-gap = 18;
 sigma_s = 60;
 sigma_r = 0.4;
 h=imsize; w=imsize;
@@ -24,17 +23,18 @@ h=imsize; w=imsize;
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
-    for gap=33
+    for n=21
         % Iterate: for k=1, ... ,Ialg
         for k=1
             
             % 1. Patch Matching
             z = [];
+            gap=18; %should correspond to current n
             for i=1:gap:h
                 i
                 for j=1:gap:w
                 [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
-                z = [z; zij];
+                z = [z zij];
                 end
             end
             
