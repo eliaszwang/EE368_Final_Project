@@ -33,23 +33,27 @@ for L=1
             for i=1:gap:h
                 i
                 for j=1:gap:w
-                [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
-                z = [z zij];
+                    [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
+                    z = [z zij];
                 end
             end
             
             % 2. Robust Aggregation
+            disp('robust aggregation')
             [Xtilde]=irls(R,X,z);
 
+            disp('content fusion')
             % 3. Content Fusion
             Nc=(imsize/L)^2;
             W=ones(3*Nc,1);
             Xhat=(diag(W)+eye(3*Nc))\(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
+            disp('color transfer')
             % 4. Color Transfer
             X=imhistmatch(reshape(Xhat,h,w,c),reshape(S,h,w,c));
             X=X(:);
 
+            disp('denoise')
             % 5. Denoise
             X = RF(X, sigma_s, sigma_r);
             
