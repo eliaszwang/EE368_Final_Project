@@ -29,14 +29,13 @@ else
         end
     end
     P = P - repmat(mean(P,2),[1 size(P,2)]);
-    [~, S, V] = svd(P);
+    [V, D] = eig(P*P');
     
     % find eig vals
     eig_idx = 1;
-    SS = S.*S;
-    energy = 0; energy_tot = sum(SS(:));
-    for i=1:min(size(S,1),size(S,2))
-        energy = energy + S(i,i)*S(i,i);
+    energy = 0; energy_tot = sum(D(:));
+    for i=1:size(D,1)
+        energy = energy + D(i,i);
         if energy > 0.95*energy_tot
             eig_idx = i;
             break;
@@ -44,7 +43,7 @@ else
     end
     
     % reduce dimensionality
-    Vp = V(1:eig_idx);
+    Vp = P' * V(1:eig_idx);
     Pp = Vr' * P;
     RXp = Vr' * RX;
     diff = repmat(Rxp, [1 size(Pp,2)]) - Pp;
