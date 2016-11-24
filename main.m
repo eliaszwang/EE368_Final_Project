@@ -22,12 +22,14 @@ sigma_r = 0.4;
 h=imsize; w=imsize;
 
 % Loop over scales L=Lmax, ... ,1
-
+for L=1
     % Loop over patch sizes n=n1, ... ,nm
-    
+    for n=33
         % Iterate: for k=1, ... ,Ialg
+        for k=1
             % 1. Patch Matching
             z = [];
+            gap=n; %added this-Eli
             for i=1:gap:h
                 for j=1:gap:w
                 [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
@@ -49,9 +51,12 @@ h=imsize; w=imsize;
 
             % 5. Denoise
             X = RF(X, sigma_s, sigma_r);
-
+        end % end Iterate: for k=1, ... ,Ialg
+        
+    end % end patch size loop
     % Scale up
     X=imresize(X,(L+1)/L);
-    
+end % end resolution/scale loop  
+
 % Result
 X=reshape(X,imsize,imsize,3);
