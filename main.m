@@ -18,7 +18,7 @@ S = night(:);
 Q_size = 21;
 sigma_s = 60;
 sigma_r = 0.4;
-h=imsize; w=imsize;
+h=imsize; w=imsize; c=3;
 
 % Loop over scales L=Lmax, ... ,1
 for L=1
@@ -36,7 +36,7 @@ for L=1
                     R = zeros(size(house));
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
-                    [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
+                    [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w, c);
                     z = [z zij];
                 end
             end

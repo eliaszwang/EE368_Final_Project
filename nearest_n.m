@@ -1,8 +1,8 @@
-function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w)
+function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 0;
 % [h,w,c] = size(S);
-S = reshape(S, [h w 3]);
+S = reshape(S, [h w c]);
 RX = X(logical(R));
 min_l2 = Inf;
 
@@ -21,10 +21,10 @@ if opt == 0
     end
 else
     % compute patch matrix
-    P = zeros(Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
+    P = zeros(Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1), c);
     for k=1:(h-Q_size+1)
         for j=1:(w-Q_size+1)
-            patch = S(k:k+Q_size-1,j:j+Q_size-1);
+            patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
             P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
         end
     end
@@ -33,7 +33,8 @@ else
     
     % find eig vals
     eig_idx = 1;
-    energy = 0; energy_tot = sum(sum(S.*S));
+    SS = S.*S;
+    energy = 0; energy_tot = sum(SS(:));
     for i=1:min(size(S,1),size(S,2))
         energy = energy + S(i,i)*S(i,i);
         if energy > 0.95*energy_tot
