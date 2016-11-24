@@ -5,6 +5,16 @@ house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 night=night(1:imsize,1:imsize,:);
 
+R=zeros(imsize,imsize,3);
+R(200:220,170:190,:)=1;
+R=R(:);
+Q_size=21;
+X=house(:);
+S=house(:);
+w=imsize;
+h=imsize;
+[ks, ls, z] = nearest_n(R, X, Q_size, S, h, w);
+
 % 1. Patch Matching
 
 
