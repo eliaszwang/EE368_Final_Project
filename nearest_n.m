@@ -2,7 +2,7 @@ function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 0;
 % [h,w,c] = size(S);
-S = reshape(S, [h w]);
+S = reshape(S, [h w 3]);
 RX = X(logical(R));
 min_l2 = Inf;
 
