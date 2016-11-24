@@ -44,8 +44,8 @@ else
     
     % reduce dimensionality
     Vp = P' * V(1:eig_idx);
-    Pp = Vr' * P;
-    RXp = Vr' * RX;
+    Pp = Vp' * P;
+    RXp = Vp' * RX;
     diff = repmat(Rxp, [1 size(Pp,2)]) - Pp;
     sqr = sum(diff .* diff, 2);
     [~, idx] = min(sqr);
