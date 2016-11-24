@@ -24,19 +24,20 @@ h=imsize; w=imsize;
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
-    for n=33
+    for gap=33
         % Iterate: for k=1, ... ,Ialg
         for k=1
+            
             % 1. Patch Matching
             z = [];
-            gap=n; %added this-Eli
             for i=1:gap:h
+                i
                 for j=1:gap:w
                 [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
                 z = [z; zij];
                 end
             end
-
+            
             % 2. Robust Aggregation
             [Xtilde]=irls(R,X,z);
 
@@ -51,6 +52,7 @@ for L=1
 
             % 5. Denoise
             X = RF(X, sigma_s, sigma_r);
+            
         end % end Iterate: for k=1, ... ,Ialg
         
     end % end patch size loop
