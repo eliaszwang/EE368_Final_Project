@@ -1,4 +1,4 @@
-addpath('Bilateral Filtering/');
+addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
 house=im2double(imread('images/house - small.jpg'));
