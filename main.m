@@ -1,4 +1,9 @@
+% import images
 house=im2double(imread('images/house - small.jpg'));
+imsize=400;
+house=house(1:imsize,1:imsize,:);
+night=im2double(imread('images/starry-night - small.jpg'));
+night=night(1:imsize,1:imsize,:);
 
 % 1. Patch Matching
 
