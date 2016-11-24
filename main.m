@@ -11,11 +11,12 @@ night=night(1:imsize,1:imsize,:);
 
 % Initialize variables
 R = zeros(size(house));
-R(201:220,301:320,:) = 1;
+R(200:220,300:320,:) = 1;
 R = R(:);
 X = house(:);
 S = night(:);
-Q_size = 20;
+Q_size = 21;
+gap = 18;
 sigma_s = 60;
 sigma_r = 0.4;
 h=imsize; w=imsize;
@@ -25,7 +26,13 @@ h=imsize; w=imsize;
 % Iterate: for k=1, ... ,Ialg
 
 % 1. Patch Matching
-[~, ~, z] = nearest_n(R, X, Q_size, S, h, w);
+z = [];
+for i=1:gap:h
+    for j=1:gap:w
+    [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w);
+    z = [z; zij];
+    end
+end
 
 % 2. Robust Aggregation
 [Xtilde]=irls(R,X,z);
