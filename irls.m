@@ -1,4 +1,4 @@
-function [Xhat]=irls(R,X,z )
+function [Xtilde]=irls(R,X,z)
     % performs IRLS to estimate Xtilde
     % R is matrix of image patches with dimensions 3N_c by N_ij
     % X is initial estimate 
