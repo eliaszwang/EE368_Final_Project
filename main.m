@@ -1,3 +1,5 @@
+addpath('Bilateral Filtering/');
+
 % import images
 house=im2double(imread('images/house - small.jpg'));
 imsize=400;
@@ -5,8 +7,18 @@ house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 night=night(1:imsize,1:imsize,:);
 
-% 1. Patch Matching
 
+% Initialize variables
+R = zeros(size(house));
+R(201:220,301:320) = 1;
+X = house(:);
+S = night(:);
+Q_size = 20;
+sigma_s = 60;
+sigma_r = 0.4;
+
+% 1. Patch Matching
+[~, ~, z] = nearest_n(R, X, Q_size, S, imsize, imsize);
 
 % 2. Robust Aggregation
 [Xtilde]=irls(R,X,z);
@@ -19,3 +31,4 @@ X=imhistmatch(reshape(Xhat,h,w,c),reshape(S,h,w,c));
 X=X(:);
 
 % 5. Denoise
+X = RF(X, sigma_s, sigma_r);
