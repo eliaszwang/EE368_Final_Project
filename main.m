@@ -23,7 +23,7 @@ h=imsize; w=imsize; c=3;
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
-    for n=21
+    for n=(21).^2 %n=Q_size^2
         % Iterate: for k=1, ... ,Ialg
         for k=1
             
