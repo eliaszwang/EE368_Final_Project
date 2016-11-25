@@ -43,6 +43,7 @@ for L=1
                     Rall=[Rall R];
                     [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w, c);
                     z = [z zij];
+                    return
                 end
             end
             
