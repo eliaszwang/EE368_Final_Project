@@ -21,7 +21,6 @@ if opt == 0
     end
 elseif opt == 1
     % compute patch matrix
-    tic
     P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
     for k=1:(h-Q_size+1)
         for j=1:(w-Q_size+1)
@@ -29,11 +28,8 @@ elseif opt == 1
             P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
         end
     end
-    toc
     P = P - repmat(mean(P,2),[1 size(P,2)]);
-    tic
     [V, D] = eig(P*P');
-    toc
     
     % find eig vals
     eig_idx = 1;
@@ -45,7 +41,7 @@ elseif opt == 1
             break;
         end
     end
-    tic
+    
     % reduce dimensionality
     Vp = V(:,1:eig_idx);
     Pp = Vp' * P;
@@ -55,7 +51,7 @@ elseif opt == 1
     [~, idx] = min(sqr);
     ks = mod(idx, (w-Q_size+1)) + 1;
     ls = floor(idx/(w-Q_size+1)) + 1;
-    toc
+
 elseif opt == 2
     htm=vision.TemplateMatcher('Metric','Sum of squared differences');
     Loc=step(htm,rgb2gray(S),rgb2gray(reshape(RX,[Q_size Q_size 3])));
