@@ -50,7 +50,7 @@ else
     sqr = sum(diff .* diff, 2);
     [~, idx] = min(sqr);
     ks = mod(idx, (w-Q_size+1)) + 1;
-    ls = floor(idx, (w-Q_size+1)) + 1;
+    ls = floor(idx/(w-Q_size+1)) + 1;
 end
 
 
