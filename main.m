@@ -30,6 +30,7 @@ for L=1
             
             % 1. Patch Matching
             z = [];
+            Rall=[];
             Q_size=sqrt(n);
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
             for i=1:gap:h-Q_size+1
@@ -38,6 +39,7 @@ for L=1
                     R = zeros(size(house));
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
+                    Rall=[Rall R];
                     [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w, c);
                     z = [z zij];
                 end
@@ -45,7 +47,7 @@ for L=1
             
             % 2. Robust Aggregation
             disp('robust aggregation')
-            [Xtilde]=irls(R,X,z);
+            [Xtilde]=irls(Rall,X,z);
 
             disp('content fusion')
             % 3. Content Fusion
