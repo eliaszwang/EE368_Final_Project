@@ -40,8 +40,11 @@ for L=1
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
+                    tic
                     [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c);
+                    toc
                     z = [z zij];
+                    return
                 end
             end
             
@@ -71,7 +74,7 @@ for L=1
         
     end % end patch size loop
     % Scale up
-    X=imresize(X,(L+1)/L);
+%     X=imresize(X,(L+1)/L);
 end % end resolution/scale loop  
 
 % Result
