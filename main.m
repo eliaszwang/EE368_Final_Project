@@ -10,9 +10,9 @@ night=night(1:imsize,1:imsize,:);
 % Input
 
 % Initialize variables
-R = zeros(size(house));
-R(200:220,300:320,:) = 1;
-R = R(:);
+% R = zeros(size(house));
+% R(200:220,300:320,:) = 1;
+% R = R(:);
 X = house(:);
 S = night(:);
 sigma_s = 60;
@@ -29,6 +29,7 @@ for L=1
         for k=1
             
             % 1. Patch Matching
+            disp('patch matching')
             z = [];
             Rall=[];
             Q_size=sqrt(n);
@@ -49,19 +50,22 @@ for L=1
             disp('robust aggregation')
             [Xtilde]=irls(Rall,X,z);
 
-            disp('content fusion')
+            
             % 3. Content Fusion
+            disp('content fusion')
             Nc=(imsize/L)^2;
             W=ones(3*Nc,1);
             Xhat=(diag(W)+eye(3*Nc))\(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
-            disp('color transfer')
+            
             % 4. Color Transfer
+            disp('color transfer')
             X=imhistmatch(reshape(Xhat,h,w,c),reshape(S,h,w,c));
             X=X(:);
 
-            disp('denoise')
+            
             % 5. Denoise
+            disp('denoise')
             X = RF(X, sigma_s, sigma_r);
             
         end % end Iterate: for k=1, ... ,Ialg
