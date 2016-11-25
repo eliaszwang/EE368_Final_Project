@@ -71,7 +71,9 @@ for L=1
         
     end % end patch size loop
     % Scale up
-    X=imresize(X,(L+1)/L);
+    if L>1
+        X=imresize(X,L/(L-1));
+    end
 end % end resolution/scale loop  
 
 % Result
