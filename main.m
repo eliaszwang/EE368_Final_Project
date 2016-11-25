@@ -7,21 +7,19 @@ house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 night=night(1:imsize,1:imsize,:);
 
-% Input
-
 % Initialize variables
-tic
-R = zeros(size(house));
-R(200:220,300:320,:) = 1;
-R = R(:);
-X = house(:);
+
+% R = zeros(size(house));
+% R(200:220,300:320,:) = 1;
+% R = R(:);
+C = house(:);
 S = night(:);
 sigma_s = 60;
 sigma_r = 0.4;
 h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9].^2 ;
 gap_sizes=[28 18  8 5];
-
+X=C+0*randn(size(C)); %initialize estimate to content image plus noise 
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
@@ -30,6 +28,7 @@ for L=1
         for k=1
             
             % 1. Patch Matching
+            disp('patch matching')
             z = [];
             Rall=[];
             Q_size=sqrt(n);
@@ -43,8 +42,6 @@ for L=1
                     Rall=[Rall R];
                     [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c);
                     z = [z zij];
-                    toc
-                    return
                 end
             end
             
@@ -52,19 +49,22 @@ for L=1
             disp('robust aggregation')
             [Xtilde]=irls(Rall,X,z);
 
-            disp('content fusion')
+            
             % 3. Content Fusion
+            disp('content fusion')
             Nc=(imsize/L)^2;
             W=ones(3*Nc,1);
-            Xhat=(diag(W)+eye(3*Nc))\(Xtilde+W.*C); % W is (3*Nc/L x 1)
+            Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
-            disp('color transfer')
+            
             % 4. Color Transfer
+            disp('color transfer')
             X=imhistmatch(reshape(Xhat,h,w,c),reshape(S,h,w,c));
             X=X(:);
 
-            disp('denoise')
+            
             % 5. Denoise
+            disp('denoise')
             X = RF(X, sigma_s, sigma_r);
             
         end % end Iterate: for k=1, ... ,Ialg
