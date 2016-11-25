@@ -8,19 +8,20 @@ function [Xtilde]=irls(R,X,z)
     Xk=X; %current estimate
     r=0.8;
     for k=1:I
-        Xrep=repmat(Xk,1,Nij);
-        w= sum((reshape(Xrep(logical(R)),size(z)) - z).^2,1).^((r-2)/2);
+        %Xrep=repmat(Xk,1,Nij);
+        %w= sum((reshape(Xrep(logical(R)),size(z)) - z).^2,1).^((r-2)/2);
         A=zeros(tNc,1);
         B=zeros(tNc,1);
         for i=1:Nij
-            A=A+w(i)*R(:,i); % diag(R)=Rvec2mat(R)'*Rvec2mat(R)
+            w=sum((Xk(logical(R(:,i)))-z(:,i)).^2 + 1e-10).^((r-2)/2);
+            A=A+w*R(:,i); % diag(R)=Rvec2mat(R)'*Rvec2mat(R)
             temp=R(:,i);
             temp(logical(temp))=z(:,i);
-            B=B+temp;
+            B=B+w*temp;
             %A=A+w(i)*diag(R(:,i));
             %B=B+w(i)*Rvec2mat(R(:,i))'*z(:,i);
         end
-        Xk=(1./A).*B;
+        Xk=(1./(A+1e-10)).*B;
     end
     Xtilde=Xk;
 end
