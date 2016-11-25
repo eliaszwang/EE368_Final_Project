@@ -33,9 +33,9 @@ for L=1
             Rall=[];
             Q_size=sqrt(n);
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
-            for i=200:gap:h-Q_size+1
+            for i=1:gap:h-Q_size+1
                 i
-                for j=300:gap:w-Q_size+1
+                for j=1:gap:w-Q_size+1
                     R = zeros(size(house));
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);

@@ -1,6 +1,6 @@
 function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
-opt = 1;
+opt = 2;
 % [h,w,c] = size(S);
 S = reshape(S, [h w c]);
 RX = X(logical(R));
