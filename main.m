@@ -15,21 +15,23 @@ R(200:220,300:320,:) = 1;
 R = R(:);
 X = house(:);
 S = night(:);
-Q_size = 21;
 sigma_s = 60;
 sigma_r = 0.4;
 h=imsize; w=imsize; c=3;
+patch_sizes=[33 21 13 9].^2 ;
+gap_sizes=[28 18  8 5];
 
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
-    for n=(21).^2 %n=Q_size^2
+    for n=patch_sizes(2) %n=Q_size^2
         % Iterate: for k=1, ... ,Ialg
         for k=1
             
             % 1. Patch Matching
             z = [];
-            gap=18; %should correspond to current n
+            Q_size=sqrt(n);
+            gap=gap_sizes(patch_sizes==n); %should correspond to current n
             for i=1:gap:h
                 i
                 for j=1:gap:w
