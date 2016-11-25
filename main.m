@@ -40,6 +40,7 @@ for L=1
                     R = R(:);
                     [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w, c);
                     z = [z zij];
+                    return
                 end
             end
             

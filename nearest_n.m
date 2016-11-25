@@ -47,7 +47,7 @@ else
     Pp = Vp' * P;
     RXp = Vp' * RX;
     diff = repmat(RXp, [1 size(Pp,2)]) - Pp;
-    sqr = sum(diff .* diff, 2);
+    sqr = sum(diff .* diff, 1);
     [~, idx] = min(sqr);
     ks = mod(idx, (w-Q_size+1)) + 1;
     ls = floor(idx/(w-Q_size+1)) + 1;
