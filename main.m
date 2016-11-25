@@ -32,9 +32,9 @@ for L=1
             z = [];
             Q_size=sqrt(n);
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
-            for i=1:gap:h
+            for i=1:gap:h-Q_size+1
                 i
-                for j=1:gap:w
+                for j=1:gap:w-Q_size+1
                     R = zeros(size(house));
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
