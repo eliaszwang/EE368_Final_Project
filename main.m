@@ -13,14 +13,14 @@ night=night(1:imsize,1:imsize,:);
 % R = zeros(size(house));
 % R(200:220,300:320,:) = 1;
 % R = R(:);
-X = house(:);
+C = house(:);
 S = night(:);
 sigma_s = 60;
 sigma_r = 0.4;
 h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9].^2 ;
 gap_sizes=[28 18  8 5];
-
+X=C+0*randn(size(C)); %initialize estimate to content image plus noise 
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
@@ -56,7 +56,7 @@ for L=1
             disp('content fusion')
             Nc=(imsize/L)^2;
             W=ones(3*Nc,1);
-            Xhat=(diag(W)+eye(3*Nc))\(Xtilde+W.*C); % W is (3*Nc/L x 1)
+            Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
             
             % 4. Color Transfer
