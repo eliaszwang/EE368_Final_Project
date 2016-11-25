@@ -1,6 +1,6 @@
 function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
-opt = 0;
+opt = 1;
 % [h,w,c] = size(S);
 S = reshape(S, [h w c]);
 RX = X(logical(R));
@@ -19,8 +19,9 @@ if opt == 0
             end
         end
     end
-else
+elseif opt == 1
     % compute patch matrix
+    tic
     P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
     for k=1:(h-Q_size+1)
         for j=1:(w-Q_size+1)
@@ -28,8 +29,11 @@ else
             P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
         end
     end
+    toc
     P = P - repmat(mean(P,2),[1 size(P,2)]);
+    tic
     [V, D] = eig(P*P');
+    toc
     
     % find eig vals
     eig_idx = 1;
@@ -41,7 +45,7 @@ else
             break;
         end
     end
-    
+    tic
     % reduce dimensionality
     Vp = V(:,1:eig_idx);
     Pp = Vp' * P;
@@ -51,6 +55,11 @@ else
     [~, idx] = min(sqr);
     ks = mod(idx, (w-Q_size+1)) + 1;
     ls = floor(idx/(w-Q_size+1)) + 1;
+    toc
+elseif opt == 2
+    htm=vision.TemplateMatcher('Metric','Sum of squared differences');
+    Loc=step(htm,rgb2gray(S),rgb2gray(reshape(RX,[Q_size Q_size 3])));
+    ks = floor(Loc(2)-Q_size/2); ls = floor(Loc(1)-Q_size/2);
 end
 
 

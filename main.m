@@ -10,6 +10,7 @@ night=night(1:imsize,1:imsize,:);
 % Input
 
 % Initialize variables
+tic
 R = zeros(size(house));
 R(200:220,300:320,:) = 1;
 R = R(:);
@@ -33,15 +34,16 @@ for L=1
             Rall=[];
             Q_size=sqrt(n);
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
-            for i=1:gap:h-Q_size+1
+            for i=200:gap:h-Q_size+1
                 i
-                for j=1:gap:w-Q_size+1
+                for j=300:gap:w-Q_size+1
                     R = zeros(size(house));
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
-                    [~, ~, zij] = nearest_n(R, X, Q_size, S, h, w, c);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c);
                     z = [z zij];
+                    toc
                     return
                 end
             end
