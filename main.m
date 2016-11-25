@@ -24,6 +24,12 @@ X=C+0*randn(size(C)); %initialize estimate to content image plus noise
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(2) %n=Q_size^2
+        Q_size=sqrt(n);
+        P1 = im2col(S(:,:,1),[Q_size Q_size],'sliding');
+        P2 = im2col(S(:,:,2),[Q_size Q_size],'sliding');
+        P3 = im2col(S(:,:,3),[Q_size Q_size],'sliding');
+        P = [P1; P2; P3];
+        
         % Iterate: for k=1, ... ,Ialg
         for k=1
             
@@ -31,7 +37,6 @@ for L=1
             disp('patch matching')
             z = [];
             Rall=[];
-            Q_size=sqrt(n);
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
             for i=1:gap:h-Q_size+1
                 i
@@ -41,7 +46,7 @@ for L=1
                     R = R(:);
                     Rall=[Rall R];
                     tic
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, P);
                     toc
                     z = [z zij];
                     return
