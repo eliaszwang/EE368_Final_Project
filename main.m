@@ -10,7 +10,7 @@ night=night(1:imsize,1:imsize,:);
 % Initialize variables
 
 % R = zeros(size(house));
-% R(200:220,300:320,:) = 1;
+% R(270:290,170:190,:) = 1;
 % R = R(:);
 C = house(:);
 S = night(:);
@@ -36,6 +36,28 @@ for L=1
         end
         S=S(:);
         
+        % compute PCA of P
+        %P = P - repmat(mean(P,2),[1 size(P,2)]);
+        [V, D] = eig(P*P');
+        [D,I] = sort(diag(D),'descend');
+        V = V(:, I);
+        
+        % find top eig vals
+        eig_idx = 1;
+        energy = 0; energy_tot = sum(D);
+        for i=1:size(D,1)
+            energy = energy + D(i);
+
+            if energy >= 0.95*energy_tot
+                eig_idx = i;
+                break;
+            end
+        end
+        
+        % reduce dimensionality
+        Vp = V(:,1:eig_idx);
+        Pp = Vp' * P;
+        
         % Iterate: for k=1, ... ,Ialg
         for k=1
             
@@ -51,7 +73,7 @@ for L=1
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, P);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp);
                     z = [z zij];                   
                 end
             end

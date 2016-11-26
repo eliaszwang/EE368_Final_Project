@@ -1,6 +1,6 @@
-function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, P)
+function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
-opt = 0;
+opt = 1;
 % [h,w,c] = size(S);
 S = reshape(S, [h w c]);
 RX = X(logical(R));
@@ -8,6 +8,7 @@ min_l2 = Inf;
 
 
 if opt == 0
+    P=Pp;
 %     for k=1:(h-Q_size+1)
 %         for j=1:(w-Q_size+1)
 %             patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
@@ -19,36 +20,21 @@ if opt == 0
 %             end
 %         end
 %     end
-    sqr=sum((repmat(RX,1,size(P,2))-P).^2,1);
+
+    temp=repmat(RX,1,size(P,2));
+  tic; sqr=sum((temp-P).^2,1);toc;
     [~,ind]=min(sqr);
-    [ks,ls]=ind2sub([(h-Q_size+1) (w-Q_size+1)],ind);
+    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],ind); %flipped since ind goes across rows, then down columns 
 elseif opt == 1
-    % compute patch matrix
-    P = P - repmat(mean(P,2),[1 size(P,2)]);
-    [V, D] = eig(P*P');
-    
-    
-    % find eig vals
-    eig_idx = 1;
-    energy = 0; energy_tot = sum(D(:));
-    for i=1:size(D,1)
-        energy = energy + D(i,i);
-        if energy > 0.95*energy_tot
-            eig_idx = i;
-            break;
-        end
-    end
-    
-    % reduce dimensionality
-    Vp = V(:,1:eig_idx);
-    Pp = Vp' * P;
+
+   
     RXp = Vp' * RX;
     diff = repmat(RXp, [1 size(Pp,2)]) - Pp;
     sqr = sum(diff .* diff, 1);
     [~, idx] = min(sqr);
-    ks = mod(idx, (w-Q_size+1)) + 1;
-    ls = floor(idx/(w-Q_size+1)) + 1;
-
+%     ls = mod(idx-1, (w-Q_size+1)) + 1;
+%     ks = floor((idx-1)/(w-Q_size+1)) + 1;
+    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
 elseif opt == 2
     htm=vision.TemplateMatcher('Metric','Sum of squared differences');
     Loc=step(htm,rgb2gray(S),rgb2gray(reshape(RX,[Q_size Q_size 3])));
@@ -56,7 +42,7 @@ elseif opt == 2
 end
 
 
-z = S(ks:ks+Q_size-1,ls:ls+Q_size-1,:);
+z = S(ks:ks+Q_size-1,ls:ls+Q_size-1,:); %maybe compute outside so no need to pass S
 z = z(:);
 
 
