@@ -23,14 +23,14 @@ if opt == 0
 
     temp=repmat(RX,1,size(P,2));
   tic; sqr=sum((temp-P).^2,1);toc;
-    [~,ind]=min(sqr);
-    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],ind); %flipped since ind goes across rows, then down columns 
+    [~,idx]=min(sqr);
+    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
 elseif opt == 1
 
    
     RXp = Vp' * RX;
-    diff = repmat(RXp, [1 size(Pp,2)]) - Pp;
-    sqr = sum(diff .* diff, 1);
+    dif = repmat(RXp, [1 size(Pp,2)]) - Pp;
+    sqr = sum(dif.^2, 1);
     [~, idx] = min(sqr);
 %     ls = mod(idx-1, (w-Q_size+1)) + 1;
 %     ks = floor((idx-1)/(w-Q_size+1)) + 1;
