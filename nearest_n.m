@@ -22,15 +22,21 @@ if opt == 0
 %     end
 
     temp=repmat(RX,1,size(P,2));
+<<<<<<< HEAD
     sqr=sum((temp-P).^2,1);
     [~,ind]=min(sqr);
     [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],ind); %flipped since ind goes across rows, then down columns 
+=======
+  tic; sqr=sum((temp-P).^2,1);toc;
+    [~,idx]=min(sqr);
+    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
+>>>>>>> 4a932efb88d0755210997750ab05bbd72ad26a0f
 elseif opt == 1
 
    
     RXp = Vp' * RX;
-    diff = repmat(RXp, [1 size(Pp,2)]) - Pp;
-    sqr = sum(diff .* diff, 1);
+    dif = repmat(RXp, [1 size(Pp,2)]) - Pp;
+    sqr = sum(dif.^2, 1);
     [~, idx] = min(sqr);
     [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
 elseif opt == 2
