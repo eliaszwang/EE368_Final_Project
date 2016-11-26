@@ -1,4 +1,4 @@
-function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp)
+function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 1;
 % [h,w,c] = size(S);
@@ -22,15 +22,9 @@ if opt == 0
 %     end
 
     temp=repmat(RX,1,size(P,2));
-<<<<<<< HEAD
-    sqr=sum((temp-P).^2,1);
-    [~,ind]=min(sqr);
-    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],ind); %flipped since ind goes across rows, then down columns 
-=======
   tic; sqr=sum((temp-P).^2,1);toc;
     [~,idx]=min(sqr);
     [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
->>>>>>> 4a932efb88d0755210997750ab05bbd72ad26a0f
 elseif opt == 1
 
    
@@ -38,7 +32,11 @@ elseif opt == 1
     dif = repmat(RXp, [1 size(Pp,2)]) - Pp;
     sqr = sum(dif.^2, 1);
     [~, idx] = min(sqr);
-    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
+%     ls = mod(idx-1, (w-Q_size+1)) + 1;
+%     ks = floor((idx-1)/(w-Q_size+1)) + 1;
+    [ls,ks]=ind2sub([(floor( ((w-Q_size+1)-1)/Pstride ) + 1) (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )],idx); %flipped since ind goes across rows, then down columns 
+    ks=(ks-1)*Pstride+1;
+    ls=(ls-1)*Pstride+1;
 elseif opt == 2
     htm=vision.TemplateMatcher('Metric','Sum of squared differences');
     Loc=step(htm,rgb2gray(S),rgb2gray(reshape(RX,[Q_size Q_size 3])));

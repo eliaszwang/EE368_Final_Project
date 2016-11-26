@@ -15,8 +15,8 @@ night=night(1:imsize,1:imsize,:);
 mask = segment(rgb2gray(house));
 C = house(:);
 S = night(:);
-sigma_s = 60;
-sigma_r = 0.4;
+sigma_s = 10;
+sigma_r = 0.2;
 h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9].^2 ;
 gap_sizes=[28 18  8 5];
@@ -29,13 +29,13 @@ for L=1
     for n=patch_sizes(2) %n=Q_size^2
         Q_size=sqrt(n);
         % precompute P
-        Pstride=1;
+        Pstride=8;
         S = reshape(S, [h w c]);
-        P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
+        P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1) );
         for k=1:Pstride:(h-Q_size+1)
             for j=1:Pstride:(w-Q_size+1)
                 patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
-                P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
+                P(:,(ceil(k/Pstride)-1)*(floor( ((w-Q_size+1)-1)/Pstride )+ 1) + ceil(j/Pstride) ) = patch(:);
             end
         end
         S=S(:);
@@ -77,7 +77,7 @@ for L=1
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride);
                     z = [z zij];                   
                 end
             end
