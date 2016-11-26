@@ -1,4 +1,4 @@
-function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp)
+function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 1;
 % [h,w,c] = size(S);
@@ -34,7 +34,9 @@ elseif opt == 1
     [~, idx] = min(sqr);
 %     ls = mod(idx-1, (w-Q_size+1)) + 1;
 %     ks = floor((idx-1)/(w-Q_size+1)) + 1;
-    [ls,ks]=ind2sub([(w-Q_size+1) (h-Q_size+1)],idx); %flipped since ind goes across rows, then down columns 
+    [ls,ks]=ind2sub([(floor( ((w-Q_size+1)-1)/Pstride ) + 1) (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )],idx); %flipped since ind goes across rows, then down columns 
+    ks=(ks-1)*Pstride+1;
+    ls=(ls-1)*Pstride+1;
 elseif opt == 2
     htm=vision.TemplateMatcher('Metric','Sum of squared differences');
     Loc=step(htm,rgb2gray(S),rgb2gray(reshape(RX,[Q_size Q_size 3])));

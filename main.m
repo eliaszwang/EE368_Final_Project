@@ -27,13 +27,13 @@ for L=1
     for n=patch_sizes(2) %n=Q_size^2
         Q_size=sqrt(n);
         % precompute P
-        Pstride=1;
+        Pstride=4;
         S = reshape(S, [h w c]);
-        P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
+        P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1) );
         for k=1:Pstride:(h-Q_size+1)
             for j=1:Pstride:(w-Q_size+1)
                 patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
-                P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
+                P(:,(ceil(k/Pstride)-1)*(floor( ((w-Q_size+1)-1)/Pstride )+ 1) + ceil(j/Pstride) ) = patch(:);
             end
         end
         S=S(:);
@@ -75,7 +75,7 @@ for L=1
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride);
                     z = [z zij];                   
                 end
             end
