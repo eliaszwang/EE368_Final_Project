@@ -20,18 +20,18 @@ sigma_r = 0.4;
 h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9].^2 ;
 gap_sizes=[28 18  8 5];
-X=C+0*randn(size(C)); %initialize estimate to content image plus noise 
-return
+X=C+0.2*randn(size(C)); %initialize estimate to content image plus noise 
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(2) %n=Q_size^2
         Q_size=sqrt(n);
         % precompute P
+        Pstride=1;
         S = reshape(S, [h w c]);
         P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
-        for k=1:(h-Q_size+1)
-            for j=1:(w-Q_size+1)
+        for k=1:Pstride:(h-Q_size+1)
+            for j=1:Pstride:(w-Q_size+1)
                 patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
                 P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
             end
@@ -45,7 +45,7 @@ for L=1
         V = V(:, I);
         
         % find top eig vals
-        eig_idx = 1;
+        eig_idx = 1; %size(D,1)
         energy = 0; energy_tot = sum(D);
         for i=1:size(D,1)
             energy = energy + D(i);
@@ -87,8 +87,9 @@ for L=1
             
             % 3. Content Fusion
             disp('content fusion')
-            W = mask(:);
+            W = repmat(mask(:),c,1);
             Nc=(imsize/L)^2;
+            %W=0.5*ones(3*Nc,1);
             Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
             
