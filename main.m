@@ -12,7 +12,7 @@ night=night(1:imsize,1:imsize,:);
 % R = zeros(size(house));
 % R(270:290,170:190,:) = 1;
 % R = R(:);
-mask = segment(house);
+mask = segment(rgb2gray(house));
 C = house(:);
 S = night(:);
 sigma_s = 60;
@@ -21,6 +21,7 @@ h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9].^2 ;
 gap_sizes=[28 18  8 5];
 X=C+0*randn(size(C)); %initialize estimate to content image plus noise 
+return
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
