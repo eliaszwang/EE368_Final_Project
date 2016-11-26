@@ -21,7 +21,8 @@ h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9].^2 ;
 gap_sizes=[28 18  8 5];
 X=C+0*randn(size(C)); %initialize estimate to content image plus noise 
-return
+
+
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
