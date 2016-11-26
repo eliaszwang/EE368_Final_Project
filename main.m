@@ -10,7 +10,7 @@ night=night(1:imsize,1:imsize,:);
 % Initialize variables
 
 % R = zeros(size(house));
-% R(200:220,300:320,:) = 1;
+% R(270:290,170:190,:) = 1;
 % R = R(:);
 mask = segment(house);
 C = house(:);
@@ -26,10 +26,38 @@ for L=1
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(2) %n=Q_size^2
         Q_size=sqrt(n);
-        P1 = im2col(S(:,:,1),[Q_size Q_size],'sliding');
-        P2 = im2col(S(:,:,2),[Q_size Q_size],'sliding');
-        P3 = im2col(S(:,:,3),[Q_size Q_size],'sliding');
-        P = [P1; P2; P3];
+        % precompute P
+        S = reshape(S, [h w c]);
+        P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
+        for k=1:(h-Q_size+1)
+            for j=1:(w-Q_size+1)
+                patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
+                P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
+            end
+        end
+        S=S(:);
+        
+        % compute PCA of P
+        %P = P - repmat(mean(P,2),[1 size(P,2)]);
+        [V, D] = eig(P*P');
+        [D,I] = sort(diag(D),'descend');
+        V = V(:, I);
+        
+        % find top eig vals
+        eig_idx = 1;
+        energy = 0; energy_tot = sum(D);
+        for i=1:size(D,1)
+            energy = energy + D(i);
+
+            if energy >= 0.95*energy_tot
+                eig_idx = i;
+                break;
+            end
+        end
+        
+        % reduce dimensionality
+        Vp = V(:,1:eig_idx);
+        Pp = Vp' * P;
         
         % Iterate: for k=1, ... ,Ialg
         for k=1
@@ -46,7 +74,7 @@ for L=1
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp);
                     z = [z zij];                   
                 end
             end
