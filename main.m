@@ -15,7 +15,7 @@ night=night(1:imsize,1:imsize,:);
 mask = segment(rgb2gray(house));
 C = house(:);
 S = night(:);
-sigma_s = 10;
+sigma_s = 5;
 sigma_r = 0.2;
 h=imsize; w=imsize; c=3;
 patch_sizes=[33 21 13 9];
@@ -29,7 +29,7 @@ for L=1
     for n=patch_sizes(1:2) %n=Q_size
         Q_size=n;
         % precompute P
-        Pstride=8;
+        Pstride=4;
         S = reshape(S, [h w c]);
         P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1) );
         for k=1:Pstride:(h-Q_size+1)
@@ -93,7 +93,7 @@ for L=1
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(0.5*mask(:)/max(mask(:)),c,1);
+            W = repmat(0.25*mask(:)/max(mask(:)),c,1);
             Nc=(imsize/L)^2;
             %W=0.5*ones(3*Nc,1);
             Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
