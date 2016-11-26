@@ -25,10 +25,16 @@ for L=1
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(2) %n=Q_size^2
         Q_size=sqrt(n);
-        P1 = im2col(S(:,:,1),[Q_size Q_size],'sliding');
-        P2 = im2col(S(:,:,2),[Q_size Q_size],'sliding');
-        P3 = im2col(S(:,:,3),[Q_size Q_size],'sliding');
-        P = [P1; P2; P3];
+        % precompute P
+        S = reshape(S, [h w c]);
+        P = zeros(c*Q_size*Q_size, (h-Q_size+1)*(w-Q_size+1));
+        for k=1:(h-Q_size+1)
+            for j=1:(w-Q_size+1)
+                patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
+                P(:,(k-1)*(w-Q_size+1)+j) = patch(:);
+            end
+        end
+        S=S(:);
         
         % Iterate: for k=1, ... ,Ialg
         for k=1
@@ -45,7 +51,7 @@ for L=1
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall=[Rall R];
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, P);
                     z = [z zij];                   
                 end
             end

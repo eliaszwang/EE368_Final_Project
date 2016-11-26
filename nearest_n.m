@@ -1,6 +1,6 @@
 function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, P)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
-opt = 1;
+opt = 0;
 % [h,w,c] = size(S);
 S = reshape(S, [h w c]);
 RX = X(logical(R));
@@ -8,17 +8,20 @@ min_l2 = Inf;
 
 
 if opt == 0
-    for k=1:(h-Q_size+1)
-        for j=1:(w-Q_size+1)
-            patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
-            diff = RX - patch(:);
-            sqr = sum(diff .* diff);
-            if sqr < min_l2
-                min_l2 = sqr;
-                ks = k; ls = j;
-            end
-        end
-    end
+%     for k=1:(h-Q_size+1)
+%         for j=1:(w-Q_size+1)
+%             patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
+%             diff = RX - patch(:);
+%             sqr = sum(diff .* diff);
+%             if sqr < min_l2
+%                 min_l2 = sqr;
+%                 ks = k; ls = j;
+%             end
+%         end
+%     end
+    sqr=sum((repmat(RX,1,size(P,2))-P).^2,1);
+    [~,ind]=min(sqr);
+    [ks,ls]=ind2sub([(h-Q_size+1) (w-Q_size+1)],ind);
 elseif opt == 1
     % compute patch matrix
     P = P - repmat(mean(P,2),[1 size(P,2)]);
