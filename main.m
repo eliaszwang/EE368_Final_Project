@@ -18,7 +18,7 @@ S = night(:);
 sigma_s = 10;
 sigma_r = 0.2;
 h=imsize; w=imsize; c=3;
-patch_sizes=[33 21 13 9].^2 ;
+patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
 X=C+0.2*randn(size(C)); %initialize estimate to content image plus noise 
 
@@ -26,8 +26,8 @@ X=C+0.2*randn(size(C)); %initialize estimate to content image plus noise
 % Loop over scales L=Lmax, ... ,1
 for L=1
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(2) %n=Q_size^2
-        Q_size=sqrt(n);
+    for n=patch_sizes(1:2) %n=Q_size
+        Q_size=n;
         % precompute P
         Pstride=8;
         S = reshape(S, [h w c]);
@@ -63,22 +63,26 @@ for L=1
         Pp = Vp' * P;
         
         % Iterate: for k=1, ... ,Ialg
-        for k=1
+        for k=1:3
             
             % 1. Patch Matching
             disp('patch matching')
-            z = [];
-            Rall=[];
+            %z = [];
+            %Rall=[];
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
+            Rall=zeros(h*w*c, (floor( ((h-Q_size+1)-1)/gap ) + 1 )*(floor( ((w-Q_size+1)-1)/gap ) + 1) );
+            z=zeros(c*n^2, (floor( ((h-Q_size+1)-1)/gap ) + 1 )*(floor( ((w-Q_size+1)-1)/gap ) + 1) );
             for i=1:gap:h-Q_size+1
                 i
                 for j=1:gap:w-Q_size+1
-                    R = zeros(size(house));
+                    R = zeros(h,w,c);
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
-                    Rall=[Rall R];
+                    Rall(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=R;
+                    %Rall=[Rall R];
                     [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride);
-                    z = [z zij];                   
+                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=zij;
+                    %z = [z zij];                   
                 end
             end
             
@@ -89,7 +93,7 @@ for L=1
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(mask(:),c,1);
+            W = repmat(0.5*mask(:)/max(mask(:)),c,1);
             Nc=(imsize/L)^2;
             %W=0.5*ones(3*Nc,1);
             Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
