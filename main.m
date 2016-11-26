@@ -12,6 +12,7 @@ night=night(1:imsize,1:imsize,:);
 % R = zeros(size(house));
 % R(200:220,300:320,:) = 1;
 % R = R(:);
+mask = segment(house);
 C = house(:);
 S = night(:);
 sigma_s = 60;
@@ -57,8 +58,8 @@ for L=1
             
             % 3. Content Fusion
             disp('content fusion')
+            W = mask(:);
             Nc=(imsize/L)^2;
-            W=ones(3*Nc,1);
             Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
             
