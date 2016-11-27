@@ -1,4 +1,3 @@
-tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
@@ -9,6 +8,7 @@ night=im2double(imread('images/starry-night - small.jpg'));
 night=night(1:imsize,1:imsize,:);
 
 % Initialize variables
+mask = segment(rgb2gray(house));
 C0 = house(:);
 S0 = night(:);
 sigma_s = 5;
@@ -19,16 +19,14 @@ gap_sizes=[28 18  8 5];
 Lmax = 3;
 X=house+0.2*randn(size(house)); %initialize estimate to content image plus noise 
 X=imresize(X,1/Lmax);
-X=X(:);
+X
 
 
 % Loop over scales L=Lmax, ... ,1
-for L=Lmax:-1:1
+for L=Lmax
     
-    % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(imresize(house,1/L)), L);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     
@@ -95,8 +93,8 @@ for L=Lmax:-1:1
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(1*mask(:)/max(mask(:)),c,1);
-            Nc=(ceil(imsize/L))^2;
+            W = repmat(0.25*mask(:)/max(mask(:)),c,1);
+            Nc=(imsize/L)^2;
             %W=0.5*ones(3*Nc,1);
             Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
@@ -104,27 +102,26 @@ for L=Lmax:-1:1
             % 4. Color Transfer
             disp('color transfer')
             X=imhistmatch(reshape(Xhat,h,w,c),reshape(S,h,w,c));
+            X=X(:);
 
             
             % 5. Denoise
             disp('denoise')
             X = RF(X, sigma_s, sigma_r);
-            X=X(:);
             
         end % end Iterate: for k=1, ... ,Ialg
         
     end % end patch size loop
     % Scale up
     if L>1
-        X=imresize(reshape(X, [h w c]),L/(L-1));
-        X = X(:);
+        X=imresize(X,L/(L-1));
     end
 end % end resolution/scale loop  
 
 % Result
 X=reshape(X,imsize,imsize,3);
 
-toc;
+
 
 
 
