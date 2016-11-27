@@ -2,7 +2,7 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house - small.jpg'));
+house=im2double(imread('images/house 2-small.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
@@ -16,24 +16,26 @@ sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
 patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
-Lmax = 3;
+Ls = [4 2 1]; Lmax = Ls(1);
 X=house+0.2*randn(size(house)); %initialize estimate to content image plus noise 
 X=imresize(X,1/Lmax);
 X=X(:);
 
+mask = segment(rgb2gray(house), 1);
+return
 
 % Loop over scales L=Lmax, ... ,1
-for L=Lmax:-1:1
+for L=Ls
     
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(imresize(house,1/L)), 1/L);
+    mask = segment(rgb2gray(C_scaled), 1/L);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:2) %n=Q_size
+    for n=patch_sizes(1:3) %n=Q_size
         Q_size=n;
         % precompute P
         Pstride=4;
@@ -95,7 +97,7 @@ for L=Lmax:-1:1
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(1*mask(:)/max(mask(:)),c,1);
+            W = repmat(2*mask(:)/max(mask(:)),c,1);
             Nc=(ceil(imsize/L))^2;
             %W=0.5*ones(3*Nc,1);
             Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
