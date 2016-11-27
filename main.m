@@ -2,10 +2,11 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house - small.jpg'));
+house=im2double(imread('images/house 2-small.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
+%night=im2double(imread('images/night2.jpg'));
 night=night(1:imsize,1:imsize,:);
 
 % Initialize variables
@@ -16,19 +17,21 @@ sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
 patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
-Lmax = 3;
-X=house+0.2*randn(size(house)); %initialize estimate to content image plus noise 
+scales=[4 2 1];
+Lmax = max(scales);
+X=house; %initialize estimate to content image
 X=imresize(X,1/Lmax);
 X=X(:);
 
 
 % Loop over scales L=Lmax, ... ,1
-for L=Lmax:-1:1
-    
+for L=scales
+    % Add noise to initialization image
+    X=X+0.2*randn(size(X));
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(imresize(house,1/L)), 1/L);
+    mask = segment(rgb2gray(C_scaled), 1);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     
@@ -69,7 +72,7 @@ for L=Lmax:-1:1
         Pp = Vp' * P;
         
         % Iterate: for k=1, ... ,Ialg
-        for k=1:6
+        for k=1:3
             
             % 1. Patch Matching
             disp('patch matching')
@@ -95,10 +98,10 @@ for L=Lmax:-1:1
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(1*mask(:)/max(mask(:)),c,1);
-            Nc=(ceil(imsize/L))^2;
-            %W=0.5*ones(3*Nc,1);
-            Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
+            W = repmat(2*mask(:)/max(mask(:)),c,1);
+            %Nc=(ceil(imsize/L))^2;
+            W=2*ones(size(W));
+            Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
             
             % 4. Color Transfer
@@ -116,7 +119,7 @@ for L=Lmax:-1:1
     end % end patch size loop
     % Scale up
     if L>1
-        X=imresize(reshape(X, [h w c]),L/(L-1));
+        X=imresize(reshape(X, [h w c]),L/(scales(find(scales==L)+1)));
         X = X(:);
     end
 end % end resolution/scale loop  
