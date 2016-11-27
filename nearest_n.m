@@ -1,4 +1,4 @@
-function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride)
+function [ks, ls, z] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 1;
 % [h,w,c] = size(S);
@@ -28,7 +28,7 @@ if opt == 0
 elseif opt == 1
 
    
-    RXp = Vp' * RX;
+    RXp = Vp' * (RX-mp);
     dif = repmat(RXp, [1 size(Pp,2)]) - Pp;
     sqr = sum(dif.^2, 1);
     [~, idx] = min(sqr);
