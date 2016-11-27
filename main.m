@@ -20,20 +20,21 @@ gap_sizes=[28 18  8 5];
 scales=[4 2 1];
 Lmax = max(scales);
 X=house; %initialize estimate to content image
-X=imresize(X,1/Lmax);
 X=X(:);
 
 
 % Loop over scales L=Lmax, ... ,1
 for L=scales
-    % Add noise to initialization image
-    X=X+0.2*randn(size(X));
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
     mask = segment(rgb2gray(C_scaled), 1);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
+    X=imresize(reshape(X, [h0 w0 c]),1/L);
+    X=X(:);
+    % Add noise to initialization image
+    X=X+0.5*randn(size(X));
     
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(1:2) %n=Q_size
@@ -119,7 +120,7 @@ for L=scales
     end % end patch size loop
     % Scale up
     if L>1
-        X=imresize(reshape(X, [h w c]),L/(scales(find(scales==L)+1)));
+        X=imresize(reshape(X, [h w c]),L);
         X = X(:);
     end
 end % end resolution/scale loop  
