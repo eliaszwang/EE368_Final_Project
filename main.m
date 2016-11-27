@@ -15,12 +15,13 @@ S0 = night(:);
 sigma_s = 5;
 sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
+C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color palette of S
+C0=C0(:);
 patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
 scales=[4 2 1];
 Lmax = max(scales);
-X=house; %initialize estimate to content image
-X=X(:);
+X=C0; %initialize estimate to content image
 
 
 % Loop over scales L=Lmax, ... ,1
@@ -28,13 +29,13 @@ for L=scales
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(C_scaled), 1);
+    mask = segment(rgb2gray(C_scaled), 1/L);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     X=imresize(reshape(X, [h0 w0 c]),1/L);
     X=X(:);
     % Add noise to initialization image
-    X=X+0.5*randn(size(X));
+    X=X+0.2*randn(size(X));
     
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(1:2) %n=Q_size
@@ -129,7 +130,7 @@ end % end resolution/scale loop
 X=reshape(X,imsize,imsize,3);
 
 toc;
-
+sound(sin(6.28*1000*[1:0.1:500]));
 
 
 
