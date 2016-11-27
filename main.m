@@ -8,6 +8,7 @@ house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 %night=im2double(imread('images/night2.jpg'));
 %night=im2double(imread('images/man.jpg'));
+%night=im2double(imread('images/picasso.jpg'));
 night=night(1:imsize,1:imsize,:);
 %house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 
@@ -21,7 +22,7 @@ C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color 
 C0=C0(:);
 patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
-scales=[4 2 1];
+scales=[8 4 2 1];
 Lmax = max(scales);
 X=C0; %initialize estimate to content image
 X=X+max(X)*randn(size(X)); %add large noise at beginning
