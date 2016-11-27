@@ -2,11 +2,12 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house - small.jpg'));
+house=im2double(imread('images/house 2-small.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 %night=im2double(imread('images/night2.jpg'));
+%night=im2double(imread('images/man.jpg'));
 night=night(1:imsize,1:imsize,:);
 %house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 
@@ -68,7 +69,7 @@ for L=scales
         for i=1:size(D,1)
             energy = energy + D(i);
 
-            if energy >= 0.9*energy_tot
+            if energy >= 0.95*energy_tot
                 eig_idx = i;
                 break;
             end
