@@ -2,10 +2,11 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house 2-small.jpg'));
+house=im2double(imread('images/house - small.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
+%night=im2double(imread('images/night2.jpg'));
 night=night(1:imsize,1:imsize,:);
 
 % Initialize variables
@@ -14,25 +15,30 @@ S0 = night(:);
 sigma_s = 5;
 sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
+C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color palette of S
+C0=C0(:);
 patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
-Ls = [4 2 1]; Lmax = Ls(1);
-X=house+0.2*randn(size(house)); %initialize estimate to content image plus noise 
-X=imresize(X,1/Lmax);
-X=X(:);
+scales=[4 2 1];
+Lmax = max(scales);
+X=C0; %initialize estimate to content image
 
-mask = segment(rgb2gray(house), 1);
-return
+% mask = segment(rgb2gray(house), 1);
+% return
 
 % Loop over scales L=Lmax, ... ,1
-for L=Ls
-    
+
+for L=scales
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
     mask = segment(rgb2gray(C_scaled), 1/L);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
+    X=imresize(reshape(X, [h0 w0 c]),1/L);
+    X=X(:);
+    % Add noise to initialization image
+    X=X+0.2*randn(size(X));
     
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(1:3) %n=Q_size
@@ -71,7 +77,7 @@ for L=Ls
         Pp = Vp' * P;
         
         % Iterate: for k=1, ... ,Ialg
-        for k=1:6
+        for k=1:3
             
             % 1. Patch Matching
             disp('patch matching')
@@ -98,9 +104,8 @@ for L=Ls
             % 3. Content Fusion
             disp('content fusion')
             W = repmat(2*mask(:)/max(mask(:)),c,1);
-            Nc=(ceil(imsize/L))^2;
-            %W=0.5*ones(3*Nc,1);
-            Xhat=(1./(W+ones(3*Nc,1))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
+%             W=2*ones(size(W));
+            Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
             
             % 4. Color Transfer
@@ -118,7 +123,7 @@ for L=Ls
     end % end patch size loop
     % Scale up
     if L>1
-        X=imresize(reshape(X, [h w c]),L/(L-1));
+        X=imresize(reshape(X, [h w c]),L);
         X = X(:);
     end
 end % end resolution/scale loop  
@@ -127,7 +132,7 @@ end % end resolution/scale loop
 X=reshape(X,imsize,imsize,3);
 
 toc;
-
+sound(sin(6.28*1000*[1:0.1:500]));
 
 
 

@@ -7,11 +7,12 @@ function [Xtilde]=irls(R,X,z)
     I= 10; %max number of IRLS iterations
     Xk=X; %current estimate
     r=0.8;
+    unsampled_pixs=double(~(sum(R,2)>0)); %prevent black bar artifacts from gap
     for k=1:I
         %Xrep=repmat(Xk,1,Nij);
         %w= sum((reshape(Xrep(logical(R)),size(z)) - z).^2,1).^((r-2)/2);
-        A=zeros(tNc,1);
-        B=zeros(tNc,1);
+        A=unsampled_pixs;%zeros(tNc,1); %prevent black bar artifacts from gap
+        B=Xk.*unsampled_pixs;%zeros(tNc,1);
         for i=1:Nij
             w=sum((Xk(logical(R(:,i)))-z(:,i)).^2 + 1e-10).^((r-2)/2);
             A=A+w*R(:,i); % diag(R)=Rvec2mat(R)'*Rvec2mat(R)
