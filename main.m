@@ -28,7 +28,7 @@ for L=Lmax:-1:1
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(imresize(house,1/L)), L);
+    mask = segment(rgb2gray(imresize(house,1/L)), 1/L);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     
@@ -69,7 +69,7 @@ for L=Lmax:-1:1
         Pp = Vp' * P;
         
         % Iterate: for k=1, ... ,Ialg
-        for k=1:3
+        for k=1:6
             
             % 1. Patch Matching
             disp('patch matching')
