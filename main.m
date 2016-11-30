@@ -2,7 +2,7 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house - small.jpg'));
+house=im2double(imread('images/house 2-small.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
@@ -41,7 +41,7 @@ for L=scales
     X=X+0.2*randn(size(X));
     
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:3) %n=Q_size
+    for n=patch_sizes(1:2) %n=Q_size
         Q_size=n;
         % precompute P
         Pstride=4;
@@ -103,7 +103,7 @@ for L=scales
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(2*mask(:)/max(mask(:)),c,1);
+            W = repmat(1*mask(:)/max(mask(:)),c,1);
 %             W=2*ones(size(W));
             Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
