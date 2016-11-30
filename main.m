@@ -1,8 +1,11 @@
+clear all
+close all
+
 tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house 2-small.jpg'));
+house=im2double(imread('images/house - small.jpg'));
 house=im2double(imread('images/eagles.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
@@ -15,7 +18,7 @@ night=night(1:imsize,1:imsize,:);
 
 % Initialize variables
 C0 = house(:);
-S0 = night(:);
+S0 = night(:); S00 = night;
 sigma_s = 5;
 sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
@@ -28,6 +31,8 @@ Lmax = max(scales);
 X=C0; %initialize estimate to content image
 X=X+max(X)*randn(size(X)); %add large noise at beginning
 
+
+
 % Loop over scales L=Lmax, ... ,1
 for L=scales
     % Scale everything
@@ -37,6 +42,7 @@ for L=scales
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     X=imresize(reshape(X, [h0 w0 c]),1/L);
+    
     X=X(:);
     % Add noise to initialization image
     X=X+0.2*randn(size(X));
@@ -70,7 +76,6 @@ for L=scales
         energy = 0; energy_tot = sum(D);
         for i=1:size(D,1)
             energy = energy + D(i);
-
             if energy >= 0.95*energy_tot
                 eig_idx = i;
                 break;
@@ -84,13 +89,17 @@ for L=scales
         % Iterate: for k=1, ... ,Ialg
         for k=1:3
             
+            % 0. Transfer style with SURF
+            disp('SURF transfer')
+            X = surf_transfer(reshape(X, [h w c]), reshape(S, [h w c]));
+            X = X(:);
+            
             % 1. Patch Matching
             disp('patch matching')
             gap=gap_sizes(patch_sizes==n); %should correspond to current n
             Rall=zeros(h*w*c, (floor( ((h-Q_size+1)-1)/gap ) + 1 )*(floor( ((w-Q_size+1)-1)/gap ) + 1) );
             z=zeros(c*n^2, (floor( ((h-Q_size+1)-1)/gap ) + 1 )*(floor( ((w-Q_size+1)-1)/gap ) + 1) );
             for i=1:gap:h-Q_size+1
-                i
                 for j=1:gap:w-Q_size+1
                     R = zeros(h,w,c);
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
@@ -120,8 +129,8 @@ for L=scales
 
             
             % 5. Denoise
-%             disp('denoise')
-%             X = RF(X, sigma_s, sigma_r);
+            disp('denoise')
+            X = RF(X, sigma_s, sigma_r);
             X=X(:);
             
         end % end Iterate: for k=1, ... ,Ialg
