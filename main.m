@@ -3,11 +3,15 @@ addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
 house=im2double(imread('images/house 2-small.jpg'));
+house=im2double(imread('images/eagles.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 %night=im2double(imread('images/night2.jpg'));
+%night=im2double(imread('images/man.jpg'));
+%night=im2double(imread('images/picasso.jpg'));
 night=night(1:imsize,1:imsize,:);
+%house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 
 % Initialize variables
 C0 = house(:);
@@ -19,27 +23,25 @@ C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color 
 C0=C0(:);
 patch_sizes=[33 21 13 9];
 gap_sizes=[28 18  8 5];
-scales=[4 2 1];
+scales=[8 4 2 1];
 Lmax = max(scales);
 X=C0; %initialize estimate to content image
-
-% mask = segment(rgb2gray(house), 1);
-% return
+X=X+max(X)*randn(size(X)); %add large noise at beginning
 
 % Loop over scales L=Lmax, ... ,1
-
 for L=scales
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(C_scaled), 1/L);
+    mask = segment(rgb2gray(C_scaled), 1);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     X=imresize(reshape(X, [h0 w0 c]),1/L);
     X=X(:);
     % Add noise to initialization image
     X=X+0.2*randn(size(X));
-    
+%     X=imhistmatch(reshape(X,h,w,c),reshape(S,h,w,c));
+%     X=X(:);
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(1:2) %n=Q_size
         Q_size=n;
@@ -54,6 +56,9 @@ for L=scales
             end
         end
         S=S(:);
+        %remove mean from P
+        mp=mean(P,2);
+        P=P-repmat(mp,1,size(P,2));
         
         % compute PCA of P
         [V, D] = eig(P*P');
@@ -91,8 +96,8 @@ for L=scales
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=R;
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride);
-                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=zij;              
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp);
+                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=zij;
                 end
             end
             
@@ -103,8 +108,9 @@ for L=scales
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(1*mask(:)/max(mask(:)),c,1);
-%             W=2*ones(size(W));
+            W = repmat(2*mask(:)/max(mask(:)),c,1);
+            %Nc=(ceil(imsize/L))^2;
+            %W=2*ones(size(W));
             Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
 
             
@@ -114,8 +120,8 @@ for L=scales
 
             
             % 5. Denoise
-            disp('denoise')
-            X = RF(X, sigma_s, sigma_r);
+%             disp('denoise')
+%             X = RF(X, sigma_s, sigma_r);
             X=X(:);
             
         end % end Iterate: for k=1, ... ,Ialg
