@@ -6,7 +6,7 @@ addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
 house=im2double(imread('images/house - small.jpg'));
-house=im2double(imread('images/eagles.jpg'));
+% house=im2double(imread('images/selfie.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
@@ -18,7 +18,8 @@ night=night(1:imsize,1:imsize,:);
 
 % Initialize variables
 C0 = house(:);
-S0 = night(:); S00 = night;
+mask0 = segment(rgb2gray(house), 1);
+S0 = night(:);
 sigma_s = 5;
 sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
@@ -31,14 +32,12 @@ Lmax = max(scales);
 X=C0; %initialize estimate to content image
 X=X+max(X)*randn(size(X)); %add large noise at beginning
 
-
-
 % Loop over scales L=Lmax, ... ,1
 for L=scales
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
-    mask = segment(rgb2gray(C_scaled), 1);
+    mask = imresize(mask0, 1/L);
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     X=imresize(reshape(X, [h0 w0 c]),1/L);
@@ -89,10 +88,10 @@ for L=scales
         % Iterate: for k=1, ... ,Ialg
         for k=1:3
             
-            % 0. Transfer style with SURF
-            disp('SURF transfer')
-            X = surf_transfer(reshape(X, [h w c]), reshape(S, [h w c]));
-            X = X(:);
+%             % 0. Transfer style with SURF
+%             disp('SURF transfer')
+%             X = surf_transfer(reshape(X, [h w c]), reshape(S, [h w c]));
+%             X = X(:);
             
             % 1. Patch Matching
             disp('patch matching')
@@ -105,7 +104,7 @@ for L=scales
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=R;
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp);
+                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L);
                     z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=zij;
                 end
             end
@@ -121,7 +120,7 @@ for L=scales
             %Nc=(ceil(imsize/L))^2;
             %W=2*ones(size(W));
             Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
-
+            
             
             % 4. Color Transfer
             disp('color transfer')
