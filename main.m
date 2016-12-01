@@ -11,10 +11,10 @@ addpath('DomainTransformFilters-Source-v1.0/');
 house=im2double(imread('images/eagles.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
-night=im2double(imread('images/starry-night - small.jpg'));
+%night=im2double(imread('images/starry-night - small.jpg'));
 %night=im2double(imread('images/night2.jpg'));
 %night=im2double(imread('images/man.jpg'));
-%night=im2double(imread('images/picasso.jpg'));
+night=im2double(imread('images/picasso2.jpg'));
 night=night(1:imsize,1:imsize,:);
 %house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 
