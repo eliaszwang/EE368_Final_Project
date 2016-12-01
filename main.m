@@ -5,8 +5,10 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-house=im2double(imread('images/house - small.jpg'));
-% house=im2double(imread('images/selfie.jpg'));
+%house=im2double(imread('images/house - small.jpg'));
+%house=im2double(imread('images/house 2-small.jpg'));
+%house=im2double(imread('images/selfie.jpg'));
+house=im2double(imread('images/eagles.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
@@ -44,9 +46,10 @@ for L=scales
     
     X=X(:);
     % Add noise to initialization image
-    X=X+0.2*randn(size(X));
+    %X=X+0.2*randn(size(X));
 %     X=imhistmatch(reshape(X,h,w,c),reshape(S,h,w,c));
 %     X=X(:);
+
     % Loop over patch sizes n=n1, ... ,nm
     for n=patch_sizes(1:2) %n=Q_size
         Q_size=n;
