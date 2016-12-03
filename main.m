@@ -5,16 +5,17 @@ tic;
 addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
-%house=im2double(imread('images/house - small.jpg'));
-%house=im2double(imread('images/house 2-small.jpg'));
+% house=im2double(imread('images/house - small.jpg'));
+house=im2double(imread('images/house 2-small.jpg'));
 %house=im2double(imread('images/selfie.jpg'));
-house=im2double(imread('images/eagles.jpg'));
+% house=im2double(imread('images/eagles.jpg'));
+% house=im2double(imread('images/lena.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
-%night=im2double(imread('images/starry-night - small.jpg'));
-%night=im2double(imread('images/night2.jpg'));
+% night=im2double(imread('images/starry-night - small.jpg'));
+night=im2double(imread('images/night2.jpg'));
 %night=im2double(imread('images/man.jpg'));
-night=im2double(imread('images/picasso2.jpg'));
+% night=im2double(imread('images/picasso2.jpg'));
 night=night(1:imsize,1:imsize,:);
 %house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 
@@ -51,7 +52,7 @@ for L=scales
 %     X=X(:);
 
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:2) %n=Q_size
+    for n=patch_sizes(1:3) %n=Q_size
         Q_size=n;
         % precompute P
         Pstride=4;
