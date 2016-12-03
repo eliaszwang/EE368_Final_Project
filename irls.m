@@ -4,7 +4,7 @@ function [Xtilde]=irls(R,X,z)
     % X is initial estimate, dimensions 3N_c by 1
     % z is matrix of style patches with dimensions n by N_ij
     [tNc,Nij]=size(R);
-    I= 10; %max number of IRLS iterations
+    I= 5; %max number of IRLS iterations
     Xk=X; %current estimate
     r=0.8;
     unsampled_pixs=double(~(sum(R,2)>0)); %prevent black bar artifacts from gap

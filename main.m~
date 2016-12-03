@@ -34,12 +34,11 @@ scales=[8 4 2 1];
 Lmax = max(scales);
 X=C0; %initialize estimate to content image
 X=X+max(X)*randn(size(X)); %add large noise at beginning
-red = [];
 
-%             % 0. Transfer style with SURF
-%             disp('SURF transfer')
-%             X = surf_transfer(reshape(X, [h0 w0 c]), reshape(S0, [h0 w0 c]));
-%             X = X(:);
+            % 0. Transfer style with SURF
+            disp('SURF transfer')
+            X = surf_transfer(reshape(X, [h0 w0 c]), reshape(S, [h w c]));
+            X = X(:);
 
 % Loop over scales L=Lmax, ... ,1
 for L=scales
@@ -92,9 +91,6 @@ for L=scales
         end
         
         % reduce dimensionality
-        eig_idx
-        length(diag(D))
-        red = [red eig_idx/length(diag(D))];
         Vp = V(:,1:eig_idx);
         Pp = Vp' * P;
         
