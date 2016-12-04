@@ -12,12 +12,16 @@ house=im2double(imread('images/house 2-small.jpg'));
 % house=im2double(imread('images/lena.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
-% night=im2double(imread('images/starry-night - small.jpg'));
+night=im2double(imread('images/starry-night - small.jpg'));
 % night=im2double(imread('images/night2.jpg'));
 %night=im2double(imread('images/man.jpg'));
-night=im2double(imread('images/picasso2.jpg'));
+% night=im2double(imread('images/picasso2.jpg'));
+% night=im2double(imread('images/lamuse.jpeg'));
 night=night(1:imsize,1:imsize,:);
 %house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
+hall=im2double(imread('images/hall_night.jpg'));
+% hall=im2double(imread('images/hall_night2.jpg'));
+
 
 % Initialize variables
 C0 = house(:);
@@ -28,13 +32,16 @@ sigma_r = 0.2;
 h0=imsize; w0=imsize; c=3;
 C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color palette of S
 C0=C0(:);
-patch_sizes=[33 21 13 9];
-gap_sizes=[28 18  8 5];
+patch_sizes=[36 22 13 10];
+gap_sizes=[28 18  9 6];
 scales=[4 2 1];
 Lmax = max(scales);
-X=C0; %initialize estimate to content image
-X=X+max(X)*randn(size(X)); %add large noise at beginning
+X=bg_hall(reshape(C0,h0,w0,c),hall); %initialize estimate to content image
+X=X(:);
+% X=C0;
+% X=X+max(X)*randn(size(X)); %add large noise at beginning
 red = [];
+
 
 %             % 0. Transfer style with SURF
 %             disp('SURF transfer')
@@ -58,7 +65,7 @@ for L=scales
 %     X=X(:);
 
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:3) %n=Q_size
+    for n=patch_sizes(1:2)
         Q_size=n;
         % precompute P
         Pstride=4;
@@ -92,9 +99,6 @@ for L=scales
         end
         
         % reduce dimensionality
-        eig_idx
-        length(diag(D))
-        red = [red eig_idx/length(diag(D))];
         Vp = V(:,1:eig_idx);
         Pp = Vp' * P;
         
