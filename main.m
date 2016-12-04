@@ -49,7 +49,7 @@ red = [];
 %             X = X(:);
 
 % Loop over scales L=Lmax, ... ,1
-for L=scales
+for L=scales(2:4)
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
@@ -70,11 +70,14 @@ for L=scales
         % precompute P
         Pstride=4;
         S = reshape(S, [h w c]);
-        P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1) );
+        P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1)*4 );
         for k=1:Pstride:(h-Q_size+1)
             for j=1:Pstride:(w-Q_size+1)
                 patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
-                P(:,(ceil(k/Pstride)-1)*(floor( ((w-Q_size+1)-1)/Pstride )+ 1) + ceil(j/Pstride) ) = patch(:);
+                for l=0:3
+                    temp=imrotate(patch,l*90,'bilinear');
+                    P(:,(ceil(k/Pstride)-1)*(floor( ((w-Q_size+1)-1)/Pstride )+ 1)*4 + (ceil(j/Pstride)-1)*4 + l + 1 ) = temp(:);
+                end
             end
         end
         S=S(:);
@@ -116,8 +119,9 @@ for L=scales
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=R;
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L);
-                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=zij;
+                    [ks, ls, zij,ang] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L);
+                    temp=imrotate(reshape(zij,n,n,c),ang*90,'bilinear');
+                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=temp(:);
                 end
             end
             
