@@ -3,12 +3,12 @@ function W = segment(C, scale)
 typ = 1;
 
 if typ==1
-    sigma_edge = scale*1; sigma_blur = scale*20;
+    sigma_edge = scale*1; sigma_blur = scale*12;
     E = edge(C, 'log', 0.03, sigma_edge);
     B = imgaussfilt(0.5*E, sigma_blur);
     mask = B > mean2(B);
     BW = activecontour(C,mask);
-    W = imgaussfilt(double(BW),sigma_blur);
+    W = imgaussfilt(double(BW.*(1+10*E)),sigma_blur);
 elseif typ==2
     sigma_edge = scale*0.8; sigma_blur = scale*20;
     BW = edge(C, 'log', 0.03, sigma_edge);
