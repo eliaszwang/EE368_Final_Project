@@ -49,7 +49,7 @@ red = [];
 %             X = X(:);
 
 % Loop over scales L=Lmax, ... ,1
-for L=scales(2:4)
+for L=scales
     % Scale everything
     C_scaled = imresize(reshape(C0, [h0 w0 c]), 1/L);
     S_scaled = imresize(reshape(S0, [h0 w0 c]), 1/L);
