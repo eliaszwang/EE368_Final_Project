@@ -1,4 +1,4 @@
-function [ks, ls, z,ang] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L)
+function [ks, ls, z,ang] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L, gap)
 %Q_size=uint8(sqrt(sum(R(:)/3)))
 opt = 1;
 % [h,w,c] = size(S);
@@ -47,6 +47,7 @@ end
 
 
 z = S(ks:ks+Q_size-1,ls:ls+Q_size-1,:); %maybe compute outside so no need to pass S
+z = edge_smooth(z, gap);
 z = z(:);
 
 

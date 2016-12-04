@@ -119,7 +119,7 @@ for L=scales(2:4)
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=R;
-                    [ks, ls, zij,ang] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L);
+                    [ks, ls, zij,ang] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L, gap);
                     temp=imrotate(reshape(zij,n,n,c),ang*90,'bilinear');
                     z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=temp(:);
                 end
