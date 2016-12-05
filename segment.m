@@ -1,6 +1,6 @@
 function W = segment(C, scale)
 
-typ = 1;
+typ = 2;
 
 if typ==1
     sigma_edge = scale*1; sigma_blur = scale*3;

@@ -11,7 +11,7 @@ if typ==1
     mask(:,1,:) = 1;
     mask(:,w,:) = 1;
     
-    mask = imgaussfilt(mask, n_gap*3);
+    mask = imgaussfilt(mask, n_gap/3);
     mask = 1 - mask / max(mask(:));
     
     out_img = mask .* in_img;

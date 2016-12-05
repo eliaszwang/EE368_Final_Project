@@ -14,11 +14,12 @@ imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 % night=im2double(imread('images/night2.jpg'));
+% night=im2double(imread('images/femme2.jpg'));
 %night=im2double(imread('images/man.jpg'));
 % night=im2double(imread('images/picasso2.jpg'));
 % night=im2double(imread('images/lamuse.jpeg'));
 night=night(1:imsize,1:imsize,:);
-%house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
+% house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 hall=im2double(imread('images/hall_night.jpg'));
 % hall=im2double(imread('images/hall_night2.jpg'));
 
@@ -34,9 +35,30 @@ C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color 
 C0=C0(:);
 patch_sizes=[36 22 13 10];
 gap_sizes=[28 18  9 6];
-scales=[8 4 2 1];
+scales=[4 2 1];
 Lmax = max(scales);
-X=bg_hall(reshape(C0,h0,w0,c),hall); %initialize estimate to content image
+X0=bg_hall(reshape(C0,h0,w0,c),ones(h0,w0,c)); %initialize estimate to content image
+% X0=bg_hall(reshape(C0,h0,w0,c),hall); %initialize estimate to content image
+
+
+X=X0(:);
+
+%%%%%%%%%%%%%%%%%%%%%%%
+C0 = X(;
+mask0 = segment(rgb2gray(house), 1);
+S0 = night(:);
+sigma_s = 5;
+sigma_r = 0.2;
+h0=imsize; w0=imsize; c=3;
+C0=imhistmatch(reshape(C0,h0,w0,c),reshape(S0,h0,w0,c)); %initailize C to color palette of S
+C0=C0(:);
+patch_sizes=[36 22 13 10];
+gap_sizes=[28 18  9 6];
+scales=[4 2 1];
+Lmax = max(scales);
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+% X=C0;
 % X=X+max(X)*randn(size(X)); %add large noise at beginning
 red = [];
 
@@ -63,16 +85,19 @@ for L=scales
 %     X=X(:);
 
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:3) %n=Q_size
+    for n=patch_sizes(1:2)
         Q_size=n;
         % precompute P
         Pstride=4;
         S = reshape(S, [h w c]);
-        P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1) );
+        P = zeros(c*Q_size*Q_size, (floor( ((h-Q_size+1)-1)/Pstride ) + 1 )*(floor( ((w-Q_size+1)-1)/Pstride ) + 1)*4 );
         for k=1:Pstride:(h-Q_size+1)
             for j=1:Pstride:(w-Q_size+1)
                 patch = S(k:k+Q_size-1,j:j+Q_size-1,:);
-                P(:,(ceil(k/Pstride)-1)*(floor( ((w-Q_size+1)-1)/Pstride )+ 1) + ceil(j/Pstride) ) = patch(:);
+                for l=0:3
+                    temp=imrotate(patch,l*90,'bilinear');
+                    P(:,(ceil(k/Pstride)-1)*(floor( ((w-Q_size+1)-1)/Pstride )+ 1)*4 + (ceil(j/Pstride)-1)*4 + l + 1 ) = temp(:);
+                end
             end
         end
         S=S(:);
@@ -100,6 +125,7 @@ for L=scales
         Vp = V(:,1:eig_idx);
         Pp = Vp' * P;
         
+        
         % Iterate: for k=1, ... ,Ialg
         for k=1:3
             
@@ -114,21 +140,22 @@ for L=scales
                     R(i:i+Q_size-1,j:j+Q_size-1,:) = 1;
                     R = R(:);
                     Rall(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=R;
-                    [ks, ls, zij] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L);
-                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=zij;
+                    [ks, ls, zij,ang] = nearest_n(R, X, Q_size, S, h, w, c, Pp,Vp,Pstride,mp,L, gap);
+                    temp=imrotate(reshape(zij,n,n,c),ang*90,'bilinear');
+                    z(:,(ceil(i/gap)-1)*(floor( ((w-Q_size+1)-1)/gap )+ 1) + ceil(j/gap))=temp(:);
                 end
             end
             
             % 2. Robust Aggregation
             disp('robust aggregation')
             [Xtilde]=irls(Rall,X,z);
-
+            
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(2*mask(:)/max(mask(:)),c,1);
+            W = repmat(1.5*mask(:)/max(mask(:)),c,1);
             %Nc=(ceil(imsize/L))^2;
-            %W=2*ones(size(W));
+            W=1.5*ones(size(W));
             Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
             
             

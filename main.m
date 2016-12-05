@@ -6,19 +6,20 @@ addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
 % house=im2double(imread('images/house - small.jpg'));
-house=im2double(imread('images/house 2-small.jpg'));
+% house=im2double(imread('images/house 2-small.jpg'));
 %house=im2double(imread('images/selfie.jpg'));
 % house=im2double(imread('images/eagles.jpg'));
-% house=im2double(imread('images/lena.jpg'));
+house=im2double(imread('images/lena.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 night=im2double(imread('images/starry-night - small.jpg'));
 % night=im2double(imread('images/night2.jpg'));
+% night=im2double(imread('images/femme2.jpg'));
 %night=im2double(imread('images/man.jpg'));
 % night=im2double(imread('images/picasso2.jpg'));
 % night=im2double(imread('images/lamuse.jpeg'));
 night=night(1:imsize,1:imsize,:);
-%house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
+% house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 hall=im2double(imread('images/hall_night.jpg'));
 % hall=im2double(imread('images/hall_night2.jpg'));
 
@@ -36,11 +37,12 @@ patch_sizes=[36 22 13 10];
 gap_sizes=[28 18  9 6];
 scales=[4 2 1];
 Lmax = max(scales);
-X=bg_hall(reshape(C0,h0,w0,c),hall); %initialize estimate to content image
+% X0=bg_hall(reshape(C0,h0,w0,c),ones(h0,w0,c)); %initialize estimate to content image
+% X0=bg_hall(reshape(C0,h0,w0,c),hall); %initialize estimate to content image
+X=C0;
+X=X+max(X)*randn(size(X)); %add large noise at beginning
+
 X=X(:);
-% X=C0;
-% X=X+max(X)*randn(size(X)); %add large noise at beginning
-red = [];
 
 
 %             % 0. Transfer style with SURF
@@ -57,15 +59,20 @@ for L=scales
     C = C_scaled(:); S = S_scaled(:);
     h = ceil(h0/L); w = ceil(w0/L);
     X=imresize(reshape(X, [h0 w0 c]),1/L);
+    halls=imresize(hall,1/L);
     
     X=X(:);
+    
     % Add noise to initialization image
     %X=X+0.2*randn(size(X));
 %     X=imhistmatch(reshape(X,h,w,c),reshape(S,h,w,c));
 %     X=X(:);
 
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:2)
+    for n=patch_sizes(1:3)
+        if L>1 && n==13
+            continue
+        end
         Q_size=n;
         % precompute P
         Pstride=4;
@@ -105,8 +112,11 @@ for L=scales
         Vp = V(:,1:eig_idx);
         Pp = Vp' * P;
         
+        
         % Iterate: for k=1, ... ,Ialg
         for k=1:3
+            
+            X = 0.25*halls(:)+0.75*X;
             
             % 1. Patch Matching
             disp('patch matching')
@@ -128,13 +138,13 @@ for L=scales
             % 2. Robust Aggregation
             disp('robust aggregation')
             [Xtilde]=irls(Rall,X,z);
-
+            
             
             % 3. Content Fusion
             disp('content fusion')
-            W = repmat(2*mask(:)/max(mask(:)),c,1);
+            W = repmat(1.5*mask(:)/max(mask(:)),c,1);
             %Nc=(ceil(imsize/L))^2;
-            %W=2*ones(size(W));
+%             W=1.5*zeros(size(W));
             Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
             
             
