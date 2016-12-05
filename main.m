@@ -13,19 +13,19 @@ house=im2double(imread('images/eagles.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
 % night=im2double(imread('images/starry-night - small.jpg'));
-night=im2double(imread('images/night2.jpg'));
+% night=im2double(imread('images/night2.jpg'));
 % night=im2double(imread('images/femme2.jpg'));
 %night=im2double(imread('images/man.jpg'));
 % night=im2double(imread('images/picasso2.jpg'));
 % night=im2double(imread('images/lamuse.jpeg'));
-% night=im2double(imread('images/derschrei.jpg'));
+night=im2double(imread('images/derschrei.jpg'));
 night=night(1:imsize,1:imsize,:);
 % house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 % hall=im2double(imread('images/hall_night.jpg'));
 hall=im2double(imread('images/hall_night2.jpg'));
 % hall=im2double(imread('images/hall_pic.jpg'));
 % hall=im2double(imread('images/hall_schrei.jpg'));
-
+return
 % Initialize variables
 C0 = house(:);
 mask0 = segment(rgb2gray(house), 1);
