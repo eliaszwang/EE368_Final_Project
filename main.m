@@ -6,9 +6,9 @@ addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
 % house=im2double(imread('images/house - small.jpg'));
- house=im2double(imread('images/house 2-small.jpg'));
+%  house=im2double(imread('images/house 2-small.jpg'));
 % house=im2double(imread('images/selfie.jpg'));
-%house=im2double(imread('images/eagles.jpg'));
+house=im2double(imread('images/eagles.jpg'));
 % house=im2double(imread('images/lena.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
@@ -18,14 +18,14 @@ house=house(1:imsize,1:imsize,:);
 %night=im2double(imread('images/man.jpg'));
 % night=im2double(imread('images/picasso2.jpg'));
 % night=im2double(imread('images/lamuse.jpeg'));
-%night=im2double(imread('images/derschrei.jpg'));
+% night=im2double(imread('images/derschrei.jpg'));
 night=night(1:imsize,1:imsize,:);
 % house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
-house=imgaussfilt(house,100);
-% hall=im2double(imread('images/hall_night.jpg'));
-hall=im2double(imread('images/hall_night2.jpg'));
-% hall=im2double(imread('images/hall_pic.jpg'));
-% hall=im2double(imread('images/hall_schrei.jpg'));
+% house=imgaussfilt(house,100);
+hall=im2double(imread('images/hall_night_eagles.jpg'));
+% hall=im2double(imread('images/hall_night2_eagles.jpg'));
+% hall=im2double(imread('images/hall_pic_eagles.jpg'));
+% hall=im2double(imread('images/hall_schrei_eagles.jpg'));
 
 % Initialize variables
 C0 = house(:);
@@ -46,7 +46,6 @@ X=C0;
 X=X+max(X)*randn(size(X)); %add large noise at beginning
 
 X=X(:);
-
 
 %             % 0. Transfer style with SURF
 %             disp('SURF transfer')
@@ -72,7 +71,7 @@ for L=scales
 %     X=X(:);
 
     % Loop over patch sizes n=n1, ... ,nm
-    for n=patch_sizes(1:2)
+    for n=patch_sizes(1:3)
         if L>1 && n==13
             continue
         end
@@ -119,7 +118,7 @@ for L=scales
         % Iterate: for k=1, ... ,Ialg
         for k=1:3
             
-            %X = 0.25*halls(:)+0.75*X;
+            X = 0.25*halls(:)+0.75*X;
             
             % 1. Patch Matching
             disp('patch matching')
@@ -147,7 +146,7 @@ for L=scales
             disp('content fusion')
             W = repmat(1.5*mask(:)/max(mask(:)),c,1);
             %Nc=(ceil(imsize/L))^2;
-             W=1.5*zeros(size(W));
+%              W=1.5*zeros(size(W));
             Xhat=(1./(W+ones(size(W)))).*(Xtilde+W.*C); % W is (3*Nc/L x 1)
             
             
