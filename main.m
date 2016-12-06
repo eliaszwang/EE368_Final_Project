@@ -6,14 +6,14 @@ addpath('DomainTransformFilters-Source-v1.0/');
 
 % import images
 % house=im2double(imread('images/house - small.jpg'));
-%  house=im2double(imread('images/house 2-small.jpg'));
+ house=im2double(imread('images/house 2-small.jpg'));
 % house=im2double(imread('images/selfie.jpg'));
-house=im2double(imread('images/eagles.jpg'));
+% house=im2double(imread('images/eagles.jpg'));
 % house=im2double(imread('images/lena.jpg'));
 imsize=400;
 house=house(1:imsize,1:imsize,:);
-%  night=im2double(imread('images/starry-night - small.jpg'));
-night=im2double(imread('images/night2.jpg'));
+ night=im2double(imread('images/starry-night - small.jpg'));
+% night=im2double(imread('images/night2.jpg'));
 % night=im2double(imread('images/femme2.jpg'));
 %night=im2double(imread('images/man.jpg'));
 % night=im2double(imread('images/picasso2.jpg'));
@@ -22,8 +22,8 @@ night=im2double(imread('images/night2.jpg'));
 night=night(1:imsize,1:imsize,:);
 % house=ones(size(house)); %remove comment if want to generate hallucination, remember to change mask(W) too
 % house=imgaussfilt(house,100);
-% hall=im2double(imread('images/hall_night_eagles.jpg'));
-hall=im2double(imread('images/hall_night2_eagles.jpg'));
+hall=im2double(imread('images/hall_night_house.jpg'));
+% hall=im2double(imread('images/hall_night2_eagles.jpg'));
 % hall=im2double(imread('images/hall_pic_eagles.jpg'));
 % hall=im2double(imread('images/hall_schrei_eagles.jpg'));
 
@@ -118,7 +118,7 @@ for L=scales
         % Iterate: for k=1, ... ,Ialg
         for k=1:3
             
-            X = 0.25*halls(:)+0.75*X;
+%             X = 0.25*halls(:)+0.75*X;
             
             % 1. Patch Matching
             disp('patch matching')
