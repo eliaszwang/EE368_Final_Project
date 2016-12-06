@@ -31,7 +31,7 @@ elseif opt == 1
     RXp = Vp' * (RX-mp);
     dif = repmat(RXp, [1 size(Pp,2)]) - Pp;
     sqr = sum(dif.^2, 1);
-    sqr = sqr+0.0*min(sqr)*randn(size(sqr)); % add some noise to NN 
+    sqr = sqr+0.1*min(sqr)*randn(size(sqr)); % add some noise to NN 
     [~, idx] = min(sqr);
 %     ls = mod(idx-1, (w-Q_size+1)) + 1;
 %     ks = floor((idx-1)/(w-Q_size+1)) + 1;
