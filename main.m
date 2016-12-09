@@ -46,6 +46,9 @@ est_img=style_transfer(...
     [4 2 1],...
     imsize);
 
+figure
+imshow(est_img)
+
 toc;
 sound(sin(6.28*1000*[1:0.1:500]));
 
