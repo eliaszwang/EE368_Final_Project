@@ -1,4 +1,4 @@
-clear all
+clear 
 close all
 
 tic;
@@ -8,19 +8,19 @@ imsize=400;
 
 % import images
 
-% content=im2double(imread('images/house - small.jpg'));
+
 content=im2double(imread('images/house 2-small.jpg'));
 % content=im2double(imread('images/selfie.jpg'));
 % content=im2double(imread('images/eagles.jpg'));
 % content=im2double(imread('images/lena.jpg'));
 content=content(1:imsize,1:imsize,:);
 
-style=im2double(imread('images/starry-night - small.jpg'));
+ style=im2double(imread('images/starry-night - small.jpg'));
 % style=im2double(imread('images/night2.jpg'));
-% style=im2double(imread('images/femme2.jpg'));
+% style=im2double(imread('images/femme.jpg'));
 % style=im2double(imread('images/man.jpg'));
 % style=im2double(imread('images/picasso2.jpg'));
-% style=im2double(imread('images/lamuse.jpeg'));
+% style=im2double(imread('images/lamuse.jpg'));
 % style=im2double(imread('images/derschrei.jpg'));
 style=style(1:imsize,1:imsize,:);
 
