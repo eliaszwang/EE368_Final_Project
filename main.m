@@ -15,13 +15,14 @@ content=im2double(imread('images/house 2-small.jpg'));
 % content=im2double(imread('images/lena.jpg'));
 content=content(1:imsize,1:imsize,:);
 
- style=im2double(imread('images/starry-night - small.jpg'));
+style=im2double(imread('images/starry-night - small.jpg'));
 % style=im2double(imread('images/night2.jpg'));
 % style=im2double(imread('images/femme.jpg'));
 % style=im2double(imread('images/man.jpg'));
 % style=im2double(imread('images/picasso2.jpg'));
 % style=im2double(imread('images/lamuse.jpg'));
 % style=im2double(imread('images/derschrei.jpg'));
+% style=im2double(imread('images/horse.jpg'));
 style=style(1:imsize,1:imsize,:);
 
 hall=style_transfer(...
